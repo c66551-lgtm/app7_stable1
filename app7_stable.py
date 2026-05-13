@@ -911,7 +911,7 @@ def metric_card(title, value, subtext="", accent="#2f80ff", icon=""):
         </div>
 
         <div style="
-            font-size:46px;
+            font-size:40px;
             font-weight:950;
             color:{accent};
             line-height:1.1;

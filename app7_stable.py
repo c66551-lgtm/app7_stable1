@@ -1187,7 +1187,7 @@ if run:
         "📊",
         analysis_html,
         "#2f80ff",
-        height=550
+        height=750
     )
     trade_html = f"""
     <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">

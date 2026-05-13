@@ -948,18 +948,17 @@ def neon_panel(title, icon, content_html, accent="#2f80ff", height=500):
         margin-bottom:18px;
         border-radius:20px;
         background:
-            radial-gradient(circle at top left, {accent}22, transparent 38%),
-            linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.018));
+            background:linear-gradient(145deg,rgba(255,255,255,0.96),rgba(245,245,245,0.93));
         border:1px solid rgba(255,255,255,0.14);
         box-shadow:0 0 26px rgba(0,0,0,0.32), inset 0 0 18px rgba(255,255,255,0.025);
         box-sizing:border-box;
-        color:white;
+        color:#222;
     ">
         <div style="
             font-size:28px;
             font-weight:900;
             margin-bottom:22px;
-            color:white;
+           color:#222;
         ">
             <span style="color:{accent}; font-size:30px;">{icon}</span>
             {title}
@@ -1173,7 +1172,7 @@ if run:
         margin-top:18px;
         padding:16px 18px;
         border-radius:14px;
-        background:rgba(47,128,255,0.10);
+        background:rgba(47,128,255,0.18);
         border:1px solid rgba(47,128,255,0.35);
     ">
         <b>AI 解讀：</b>{reversal['message']}<br>

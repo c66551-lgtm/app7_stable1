@@ -894,12 +894,12 @@ def metric_card(title, value, subtext="", accent="#2f80ff", icon=""):
         height:190px;
         padding:24px 26px;
         border-radius:18px;
-        background:linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.025));
+        background:linear-gradient(145deg,rgba(255,255,255,0.95),rgba(245,245,245,0.92));
         border:1px solid {accent};
         box-shadow:0 0 22px rgba(0,0,0,0.28);
         box-sizing:border-box;
         font-family:Arial, sans-serif;
-        color:white;
+        color:#222;
     ">
         <div style="
             font-size:22px;
@@ -924,12 +924,13 @@ def metric_card(title, value, subtext="", accent="#2f80ff", icon=""):
             margin-top:22px;
             padding:9px 14px;
             border-radius:10px;
-            background:rgba(255,255,255,0.06);
+            background:rgba(0,0,0,0.05);
             border:1px solid rgba(255,255,255,0.12);
             font-size:21px;
             font-weight:800;
-            color:white;
-            white-space:nowrap;
+            color:#333;
+            white-space:normal;
+            word-break:break-word;
         ">
             {subtext}
         </div>

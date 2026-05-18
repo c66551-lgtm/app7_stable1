@@ -131,9 +131,6 @@ def normalize_ticker(raw_symbol):
                 auto_adjust=True,
                 progress=False
             )
-            st.write(test.tail())
-            st.write("最後一筆日期:", test.index[-1])
-            st.write("現在時間:", pd.Timestamp.now())
             
             if test is not None and not test.empty:
                 return tk

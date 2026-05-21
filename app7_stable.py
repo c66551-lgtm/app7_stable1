@@ -95,6 +95,7 @@ def load_stock_data(ticker):
         df = yf.Ticker(ticker).history(
             period="3y",
             auto_adjust=True
+            progress=False
         )
 
         if df is None or df.empty:
@@ -109,6 +110,18 @@ def load_stock_data(ticker):
         st.error(f"下載失敗：{e}")
         return pd.DataFrame()
 
+def get_realtime_price(ticker, df):
+    try:
+        fast_info = yf.Ticker(ticker).fast_info
+        price = fast_info.get("last_price")
+
+        if price is not None and price > 0:
+            return float(price)
+
+        return float(df["Close"].iloc[-1])
+
+    except Exception:
+        return float(df["Close"].iloc[-1])
 
 def normalize_ticker(raw_symbol):
     raw = raw_symbol.strip().upper()
@@ -1082,7 +1095,7 @@ if run:
         st.error("❌ 查無資料")
         st.stop()
 
-    curr_p = float(df["Close"].iloc[-1])
+    curr_p = get_realtime_price(tk, df)
 
     eps, fin_target = get_financials(tk, 20)
 
@@ -1201,7 +1214,7 @@ if run:
     m1, m2, m3, m4 = st.columns(4)
 
     with m1:
-        metric_card("目前股價", f"${curr_p:.1f}", "即時收盤價", "#2ecc71", "💵")
+        metric_card("目前股價", f"${curr_p:.1f}", "即時 / 最新可取得價格", "#2ecc71", "💵")
 
     with m2:
         metric_card("趨勢分數", f"{regime['score']}分", regime["status"], "#2f80ff", "📈")

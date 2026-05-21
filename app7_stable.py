@@ -1216,7 +1216,7 @@ if run:
     m1, m2, m3, m4 = st.columns(4)
 
     with m1:
-        metric_card("目前股價", f"${curr_p:.1f}", "即時 / 最新可取得價格", "#2ecc71", "💵")
+        metric_card("目前股價", f"${curr_p:.1f}", "即時價格", "#2ecc71", "💵")
 
     with m2:
         metric_card("趨勢分數", f"{regime['score']}分", regime["status"], "#2f80ff", "📈")

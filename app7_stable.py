@@ -206,18 +206,46 @@ def analyze_market_structure(pivots):
 
     return "橫盤 / 擴張", 0
 
-def extend_pivots_to_recent_extreme(pivots, df, lookback=30):
+def extend_pivots_to_recent_extreme(pivots, df, min_move_pct=0.03):
     if not pivots:
         return pivots
 
     last_pivot = pivots[-1]
-    last_idx = last_pivot[0]
-    last_type = last_pivot[2]
+    last_idx_raw = last_pivot[0]
+    last_price = float(last_pivot[1])
 
-    recent_df = df.iloc[last_idx:].copy()
+    # 支援 pivot index 是整數或日期
+    if isinstance(last_idx_raw, (int, np.integer)):
+        start_pos = int(last_idx_raw)
+    else:
+        start_pos = df.index.get_loc(last_idx_raw)
+
+    recent_df = df.iloc[start_pos:].copy()
 
     if len(recent_df) < 3:
         return pivots
+
+    high_label = recent_df["High"].idxmax()
+    low_label = recent_df["Low"].idxmin()
+
+    high_price = float(recent_df.loc[high_label, "High"])
+    low_price = float(recent_df.loc[low_label, "Low"])
+
+    high_pos = df.index.get_loc(high_label)
+    low_pos = df.index.get_loc(low_label)
+
+    up_move = (high_price - last_price) / last_price
+    down_move = (last_price - low_price) / last_price
+
+    # 最近這段是往上創高 → 補最新高點
+    if up_move >= down_move and up_move >= min_move_pct and high_pos > start_pos:
+        return pivots + [(high_pos, high_price, 1)]
+
+    # 最近這段是往下破低 → 補最新低點
+    if down_move > up_move and down_move >= min_move_pct and low_pos > start_pos:
+        return pivots + [(low_pos, low_price, -1)]
+
+    return pivots
 
     # 如果上一個 pivot 是低點，代表後面要找最近高點
     if last_type == -1:

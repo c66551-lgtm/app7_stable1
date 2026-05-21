@@ -206,6 +206,39 @@ def analyze_market_structure(pivots):
 
     return "橫盤 / 擴張", 0
 
+def extend_pivots_to_recent_extreme(pivots, df, lookback=30):
+    if not pivots:
+        return pivots
+
+    last_pivot = pivots[-1]
+    last_idx = last_pivot[0]
+    last_type = last_pivot[2]
+
+    recent_df = df.iloc[last_idx:].copy()
+
+    if len(recent_df) < 3:
+        return pivots
+
+    # 如果上一個 pivot 是低點，代表後面要找最近高點
+    if last_type == -1:
+        extreme_idx_label = recent_df["High"].idxmax()
+        extreme_price = float(recent_df.loc[extreme_idx_label, "High"])
+        extreme_idx = df.index.get_loc(extreme_idx_label)
+
+        if extreme_idx > last_idx:
+            return pivots + [(extreme_idx, extreme_price, 1)]
+
+    # 如果上一個 pivot 是高點，代表後面要找最近低點
+    if last_type == 1:
+        extreme_idx_label = recent_df["Low"].idxmin()
+        extreme_price = float(recent_df.loc[extreme_idx_label, "Low"])
+        extreme_idx = df.index.get_loc(extreme_idx_label)
+
+        if extreme_idx > last_idx:
+            return pivots + [(extreme_idx, extreme_price, -1)]
+
+    return pivots
+
 
 def classify_trend_regime(df, curr_p, fib, vol_zone, ai_prob, pivots):
     ma5 = df["Close"].rolling(5).mean().iloc[-1]
@@ -761,17 +794,27 @@ def run_advanced_backtest(df, ticker):
         return None
 
 
-def calculate_fibonacci_levels(df):
-    recent = df.tail(120)
+def calculate_fibonacci_levels(df, pivots=None):
+    if pivots is not None and len(pivots) >= 2:
+        recent_pivots = pivots[-4:]
 
-    sh = float(recent["High"].max())
-    sl = float(recent["Low"].min())
+        prices = [float(p[1]) for p in recent_pivots]
+
+        sh = max(prices)
+        sl = min(prices)
+    else:
+        recent = df.tail(60)
+        sh = float(recent["High"].max())
+        sl = float(recent["Low"].min())
+
     diff = sh - sl
 
     if diff <= 0:
         return None
 
     return {
+        "swing_high": sh,
+        "swing_low": sl,
         "fib_382": sh - diff * 0.382,
         "fib_500": sh - diff * 0.5,
         "fib_618": sh - diff * 0.618,
@@ -1022,8 +1065,10 @@ if run:
         st.stop()
 
     pivots = detect_pivots(df)
+    pivots = extend_pivots_to_recent_extreme(pivots, df)
+
     vol_zone = calculate_volume_profile(df)
-    fib = calculate_fibonacci_levels(df)
+    fib = calculate_fibonacci_levels(df, pivots)
 
     n_pattern = analyze_n_pattern(df, pivots)
     box = detect_consolidation(df)

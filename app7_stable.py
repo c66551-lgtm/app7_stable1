@@ -88,13 +88,15 @@ MODEL_DIR = "models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=60)
 def load_stock_data(ticker):
 
     try:
-        df = yf.Ticker(ticker).history(
+        df = yf.download(
+            ticker,
             period="3y",
-            auto_adjust=True
+            interval="1d",
+            auto_adjust=True,
             progress=False
         )
 
